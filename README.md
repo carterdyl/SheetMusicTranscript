@@ -1,4 +1,4 @@
-# PianoTranspose
+# PianoTranscript
 
 Convert solo piano audio recordings into sheet music (MIDI, MusicXML, PDF).
 
