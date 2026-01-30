@@ -67,9 +67,9 @@ cd backend
 pip install -r requirements.txt pytest
 pytest tests/
 ```
-## Goals
+## Future Goals / Roadmap
 
-- Make it transcribe piano arrangements for full mixes or multi-instrument audio.
-- Allow for different transcription versions
-    - Makes arrangements for beginner, intermediate, and advanced versions of the song based on the audio snippet.
-    - Allows users to choose to transpose the song into different selected keys.
+- Mixed-audio support (piano reduction): Transcribe full mixes / multi-instrument audio by separating stems and generating a piano arrangement (not just note-for-note transcription).
+- Multiple output versions: Offer alternative transcriptions (e.g., rhythm-simple vs rhythm-detailed, strict vs smooth quantization, different hand-splitting strategies).
+- Difficulty-based arrangements: Generate beginner / intermediate / advanced piano arrangements from the same audio snippet (simplification, chord reduction, rhythmic simplification, range constraints).
+- Key transposition: Let users transpose the output to selected keys (e.g., dropdown) and re-export MusicXML/PDF.
