@@ -1,0 +1,10 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+redis==5.2.1
+rq==2.1.0
+numpy<2
+librosa==0.10.2
+basic-pitch==0.4.0
+pretty_midi==0.2.10
+music21==9.3.0
