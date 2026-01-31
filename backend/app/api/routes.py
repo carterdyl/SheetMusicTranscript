@@ -28,6 +28,7 @@ async def upload(
     bpm: int = Form(0),
     quantization: str = Form("1/16"),
     split_point: int = Form(60),
+    semitones: int = Form(0),
 ):
     data = await audio.read()
     if len(data) > MAX_UPLOAD_BYTES:
@@ -41,12 +42,16 @@ async def upload(
     audio_path = UPLOAD_DIR / f"{job_id}{ext}"
     audio_path.write_bytes(data)
 
+    if not (-12 <= semitones <= 12):
+        raise HTTPException(400, "semitones must be between -12 and +12")
+
     params = {
         "job_id": job_id,
         "audio_path": str(audio_path),
         "bpm": bpm,
         "quantization": quantization,
         "split_point": split_point,
+        "semitones": semitones,
     }
     create_job(job_id, params)
     _get_queue().enqueue("worker.run_pipeline", params, job_timeout="30m")
@@ -59,7 +64,13 @@ def job_status(job_id: str):
     job = get_job(job_id)
     if not job:
         raise HTTPException(404, "Job not found")
-    resp: dict = {"status": job["status"], "progress": job["progress"]}
+    params = job.get("params", {})
+    semitones = params.get("semitones", 0) if isinstance(params, dict) else 0
+    resp: dict = {
+        "status": job["status"],
+        "progress": job["progress"],
+        "semitones": semitones,
+    }
     if job["status"] == "error":
         resp["error"] = job.get("error", "Unknown error")
     if "outputs" in job and isinstance(job["outputs"], dict):

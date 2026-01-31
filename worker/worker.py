@@ -11,6 +11,7 @@ from app.config import OUTPUT_DIR
 from app.storage.jobs import update_job
 from app.services.transcribe import transcribe
 from app.services.postprocess import estimate_tempo, quantize, split_hands
+from app.services.transpose import transpose_notes
 from app.services.export_midi import export_midi
 from app.services.export_musicxml import export_musicxml
 from app.services.render_pdf import render_pdf
@@ -25,6 +26,7 @@ def run_pipeline(params: dict):
     user_bpm = params.get("bpm", 0)
     quant = params.get("quantization", "1/16")
     split_point = params.get("split_point", 60)
+    semitones = params.get("semitones", 0)
 
     try:
         update_job(job_id, status="running", progress=5)
@@ -45,21 +47,25 @@ def run_pipeline(params: dict):
         events_q = quantize(events, bpm, quant)
         update_job(job_id, progress=65)
 
-        # 4. Split hands
+        # 4. Transpose (if requested)
+        events_q = transpose_notes(events_q, semitones)
+        update_job(job_id, progress=68)
+
+        # 5. Split hands
         rh, lh = split_hands(events_q, split_point)
         update_job(job_id, progress=70)
 
-        # 5. Export MIDI
+        # 6. Export MIDI
         midi_name = f"{job_id}.mid"
         export_midi(events_q, bpm, str(OUTPUT_DIR / midi_name))
         update_job(job_id, progress=80)
 
-        # 6. Export MusicXML
+        # 7. Export MusicXML
         xml_name = f"{job_id}.musicxml"
         export_musicxml(rh, lh, bpm, str(OUTPUT_DIR / xml_name))
         update_job(job_id, progress=90)
 
-        # 7. Render PDF (optional)
+        # 8. Render PDF (optional)
         pdf_name = f"{job_id}.pdf"
         pdf_ok = render_pdf(str(OUTPUT_DIR / xml_name), str(OUTPUT_DIR / pdf_name))
         update_job(job_id, progress=95)
