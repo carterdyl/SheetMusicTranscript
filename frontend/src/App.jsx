@@ -6,6 +6,7 @@ export default function App() {
   const [file, setFile] = useState(null);
   const [bpm, setBpm] = useState("");
   const [quant, setQuant] = useState("1/16");
+  const [semitones, setSemitones] = useState("0");
   const [jobId, setJobId] = useState(null);
   const [status, setStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -21,6 +22,7 @@ export default function App() {
     fd.append("audio", file);
     if (bpm) fd.append("bpm", bpm);
     fd.append("quantization", quant);
+    fd.append("semitones", semitones);
 
     try {
       const res = await fetch(`${API}/upload`, { method: "POST", body: fd });
@@ -76,6 +78,18 @@ export default function App() {
             <option value="1/8">1/8</option>
           </select>
         </label>
+        <label>
+          Transpose:
+          <select value={semitones} onChange={(e) => setSemitones(e.target.value)} style={{ marginLeft: 4 }}>
+            <option value="0">Original (no transpose)</option>
+            {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => (
+              <option key={`up${n}`} value={String(n)}>+{n} semitone{n > 1 ? "s" : ""}</option>
+            ))}
+            {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => (
+              <option key={`dn${n}`} value={String(-n)}>-{n} semitone{n > 1 ? "s" : ""}</option>
+            ))}
+          </select>
+        </label>
       </div>
 
       <button onClick={upload} disabled={!file}>Upload &amp; Transcribe</button>
@@ -85,6 +99,9 @@ export default function App() {
       {status && (
         <div style={{ marginTop: 20 }}>
           <p>Status: <strong>{status.status}</strong> &mdash; {status.progress}%</p>
+          {status.semitones !== undefined && status.semitones !== 0 && (
+            <p>Transpose: {status.semitones > 0 ? "+" : ""}{status.semitones} semitone{Math.abs(status.semitones) !== 1 ? "s" : ""}</p>
+          )}
           <progress value={status.progress} max={100} style={{ width: "100%" }} />
         </div>
       )}
