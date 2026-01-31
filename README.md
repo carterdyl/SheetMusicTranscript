@@ -23,8 +23,9 @@ Then open **http://localhost:5173**.
 
 1. Upload a `.wav` or `.mp3` file of solo piano.
 2. Optionally set BPM and quantization.
-3. Wait for processing (progress bar updates).
-4. Download MIDI, MusicXML, or PDF.
+3. Optionally choose a transposition (semitones). Default is **"Original (no transpose)"**, which keeps the output in the same key as the audio. Select a positive or negative semitone shift to transpose the output sheet music up or down before export.
+4. Wait for processing (progress bar updates).
+5. Download MIDI, MusicXML, or PDF.
 
 ## Outputs
 
@@ -72,4 +73,4 @@ pytest tests/
 - Mixed-audio support (piano reduction): Transcribe full mixes / multi-instrument audio by separating stems and generating a piano arrangement (not just note-for-note transcription).
 - Multiple output versions: Offer alternative transcriptions (e.g., rhythm-simple vs rhythm-detailed, strict vs smooth quantization, different hand-splitting strategies).
 - Difficulty-based arrangements: Generate beginner / intermediate / advanced piano arrangements from the same audio snippet (simplification, chord reduction, rhythmic simplification, range constraints).
-- Key transposition: Let users transpose the output to selected keys (e.g., dropdown) and re-export MusicXML/PDF.
+- ~~Key transposition~~ — **Implemented.** Users can transpose the output by semitones before export.
